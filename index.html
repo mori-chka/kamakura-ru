@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>КАМАКУРА ВЕСТНИК | 鎌倉壁新聞</title>
+  <style>
+    /* =========================================
+       カラーパレット（ソ連ポスター・構成主義風）
+       ========================================= */
+    :root {
+      --bg-paper: #f2ece1;      /* 古い紙のような生成り色 */
+      --ink-black: #161616;     /* 濃く力強い黒 */
+      --accent-red: #c92a2a;    /* 構成主義の象徴である赤 */
+      --accent-yellow: #d99b26; /* 差し色のマスタードイエロー */
+      --border-thick: 4px solid var(--ink-black);
+      --border-thin: 2px solid var(--ink-black);
+    }
+
+    /* =========================================
+       フォント設定（外部CDNを使わない安全設計）
+       ※自サーバーにフォントファイルを置いた場合は
+       ここに @font-face を記述して読み込めます
+       ========================================= */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-paper);
+      color: var(--ink-black);
+      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .poster-wrapper {
+      max-width: 1040px;
+      margin: 0 auto;
+      border: 6px solid var(--ink-black);
+      background-color: var(--bg-paper);
+      box-shadow: 12px 12px 0px var(--ink-black);
+    }
+
+    /* =========================================
+       ヘッダー：壁新聞タイトル＆斜め帯
+       ========================================= */
+    header {
+      background-color: var(--ink-black);
+      color: var(--bg-paper);
+      padding: 30px 24px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 6px solid var(--accent-red);
+    }
+
+    /* 構成主義らしい斜めの赤い装飾バー */
+    header::before {
+      content: "";
+      position: absolute;
+      top: -20px;
+      right: -40px;
+      width: 240px;
+      height: 80px;
+      background-color: var(--accent-red);
+      transform: rotate(25deg);
+    }
+
+    .header-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(242, 236, 225, 0.4);
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .site-title-ru {
+      font-size: clamp(2.2rem, 6vw, 4.2rem);
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      line-height: 1.05;
+      text-transform: uppercase;
+      color: var(--bg-paper);
+      position: relative;
+      z-index: 1;
+    }
+
+    .site-title-ru span {
+      color: var(--accent-red);
+      background-color: var(--bg-paper);
+      padding: 0 10px;
+      display: inline-block;
+      transform: rotate(-2deg);
+    }
+
+    .site-title-jp {
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      font-weight: 900;
+      margin-top: 10px;
+      letter-spacing: 0.15em;
+      color: var(--accent-yellow);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* =========================================
+       ナビゲーションバー
+       ========================================= */
+    nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: var(--border-thick);
+      background-color: var(--accent-red);
+    }
+
+    nav a {
+      color: var(--bg-paper);
+      text-decoration: none;
+      font-weight: 900;
+      text-align: center;
+      padding: 12px 8px;
+      border-right: var(--border-thick);
+      transition: background-color 0.15s, color 0.15s;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    nav a:last-child {
+      border-right: none;
+    }
+
+    nav a:hover {
+      background-color: var(--ink-black);
+      color: var(--accent-yellow);
+    }
+
+    .nav-ru {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-jp {
+      font-size: 0.75rem;
+      opacity: 0.9;
+    }
+
+    /* =========================================
+       セクション共通スタイル
+       ========================================= */
+    section {
+      padding: 28px 24px;
+      border-bottom: var(--border-thick);
+    }
+
+    .section-banner {
+      display: inline-block;
+      background-color: var(--ink-black);
+      color: var(--bg-paper);
+      padding: 6px 16px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 18px;
+      transform: skewX(-8deg);
+      border-left: 8px solid var(--accent-red);
+    }
+
+    .section-banner span {
+      display: inline-block;
+      transform: skewX(8deg);
+    }
+
+    /* 日露2カラム併記グリッド */
+    .bilingual-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .col-ru {
+      border-right: var(--border-thin);
+      padding-right: 24px;
+    }
+
+    .article-headline {
+      font-size: 1.45rem;
+      font-weight: 900;
+      line-height: 1.25;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .col-jp .article-headline {
+      font-size: 1.3rem;
+    }
+
+    .article-text {
+      font-size: 0.98rem;
+      margin-bottom: 14px;
+    }
+
+    /* =========================================
+       特集グラフィック（CSSだけで作るポスター風ビジュアル）
+       ※写真を貼る場合は img タグに置き換え可能
+       ========================================= */
+    .constructivist-graphic {
+      background-color: var(--ink-black);
+      border: var(--border-thick);
+      padding: 24px;
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 160px;
+    }
+
+    .graphic-circle {
+      width: 110px;
+      height: 110px;
+      background-color: var(--accent-red);
+      border-radius: 50%;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .graphic-stripe {
+      position: absolute;
+      width: 150%;
+      height: 24px;
+      background-color: var(--accent-yellow);
+      transform: rotate(-12deg);
+      left: -10%;
+      top: 55%;
+      opacity: 0.9;
+    }
+
+    .graphic-caption {
+      color: var(--bg-paper);
+      font-weight: 900;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      z-index: 2;
+      text-align: right;
+      line-height: 1.3;
+    }
+
+    /* =========================================
+       ニュース速報（瓦版）ボックス
+       ========================================= */
+    .news-ticker {
+      background-color: var(--accent-yellow);
+      border: var(--border-thick);
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .news-tag {
+      background-color: var(--accent-red);
+      color: var(--bg-paper);
+      font-weight: 900;
+      font-size: 0.8rem;
+      padding: 2px 8px;
+      display: inline-block;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    /* =========================================
+       フッター
+       ========================================= */
+    footer {
+      background-color: var(--ink-black);
+      color: var(--bg-paper);
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    /* =========================================
+       スマホ画面向けのレスポンシブ調整
+       ========================================= */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      nav {
+        grid-template-columns: 1fr;
+      }
+      nav a {
+        border-right: none;
+        border-bottom: var(--border-thin);
+      }
+      .bilingual-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .col-ru {
+        border-right: none;
+        border-bottom: 2px dashed var(--ink-black);
+        padding-right: 0;
+        padding-bottom: 16px;
+      }
+      footer {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="poster-wrapper">
+    <!-- ヘッダー -->
+    <header>
+      <div class="header-meta">
+        <span>КАМАКУРА — ЯПОНИЯ / 神奈川県鎌倉市</span>
+        <span>ВЫПУСК № 01 / 創刊号</span>
+      </div>
+      <h1 class="site-title-ru">КАМАКУРА <span>ВЕСТНИК</span></h1>
+      <p class="site-title-jp">鎌倉発・日本文化と現代風俗の壁新聞</p>
+    </header>
+
+    <!-- ナビゲーション -->
+    <nav>
+      <a href="#kamakura">
+        <span class="nav-ru">01. КАМАКУРА</span>
+        <span class="nav-jp">古都の風景と日常</span>
+      </a>
+      <a href="#zgen">
+        <span class="nav-ru">02. ПОКОЛЕНИЕ Z</span>
+        <span class="nav-jp">Z世代カルチャー</span>
+      </a>
+      <a href="#news">
+        <span class="nav-ru">03. НОВОСТИ</span>
+        <span class="nav-jp">今週の日本ニュース</span>
+      </a>
+    </nav>
+
+    <!-- セクション1：鎌倉紹介 -->
+    <section id="kamakura">
+      <div class="section-banner">
+        <span>ГОРОД У МОРЯ И ГОР / 海と山の古都</span>
+      </div>
+
+      <!-- ポスター風グラフィック枠（あとで鎌倉の写真に差し替えもOK） -->
+      <div class="constructivist-graphic">
+        <div class="graphic-circle"></div>
+        <div class="graphic-stripe"></div>
+        <div class="graphic-caption">
+          ЭНОДЭН: ЖЕЛЕЗНАЯ ДОРОГА МЕЖДУ ДОМАМИ И ОКЕАНОМ<br>
+          <span style="font-size: 0.9rem; color: #d99b26;">家々の軒先と海辺を走る鉄路・江ノ電</span>
+        </div>
+      </div>
+
+      <div class="bilingual-grid">
+        <div class="col-ru">
+          <h2 class="article-headline">УТРЕННЯЯ КАМАКУРА И ТРАМВАЙ ЭНОДЭН</h2>
+          <p class="article-text">
+            Камакура — древняя столица самураев, окружённая с трёх сторон зелёными холмами, а с юга открытая волнам залива Сагами. Знаменитый зелёный поезд «Энодэн» проходит вплотную к жилым домам и внезапно выезжает прямо к океану.
+          </p>
+        </div>
+        <div class="col-jp">
+          <h2 class="article-headline">朝の鎌倉と海辺を走る江ノ電</h2>
+          <p class="article-text">
+            三方を緑の山々に囲まれ、南に相模湾を望む古都・鎌倉。地元の足である緑色の電車「江ノ電」は、住宅街の軒先をすり抜けるように走り、やがて視界いっぱいに広がる海の目の前へと飛び出します。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- セクション2：Z世代カルチャー -->
+    <section id="zgen">
+      <div class="section-banner">
+        <span>КУЛЬТУРА ПОКОЛЕНИЯ Z / Z世代の現在</span>
+      </div>
+
+      <div class="bilingual-grid">
+        <div class="col-ru">
+          <h2 class="article-headline">УСТАЛОСТЬ ОТ ЭКРАНОВ И РЕТРО-БУМ</h2>
+          <p class="article-text">
+            Среди японской молодёжи набирает популярность возврат к аналоговым вещам: обмен бумажными наклейками, стиль ретро эпохи Хэйсэй и отдых от социальных сетей. Вместо бесконечной ленты новостей — реальные блокноты и живое общение.
+          </p>
+        </div>
+        <div class="col-jp">
+          <h2 class="article-headline">デジタル疲れとアナログ・レトロ回帰</h2>
+          <p class="article-text">
+            今の日本の若い世代の間では、SNSのタイムラインから少し離れてアナログな手触りを楽しむ動きが広がっています。紙のシール交換や平成レトロなアイテムなど、画面の外にある「実物」の温もりが再評価されています。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- セクション3：日本のニュース番組風コーナー -->
+    <section id="news" style="border-bottom: none;">
+      <div class="section-banner">
+        <span>ХРОНИКА ЯПОНИИ / 今週の日本瓦版</span>
+      </div>
+
+      <div class="news-ticker">
+        <span class="news-tag">СРОЧНО / ニュース速報</span>
+        <div class="bilingual-grid">
+          <div class="col-ru">
+            <h3 class="article-headline" style="font-size: 1.15rem;">ТУРИСТИЧЕСКИЙ БАЛАНС В КАМАКУРЕ</h3>
+            <p class="article-text" style="margin-bottom: 0;">
+              В японских вечерних новостях активно обсуждают меры по сохранению спокойной жизни местных жителей в популярных туристических районах, включая побережье Сёнан и переезд у станции Камакуракокомаэ.
+            </p>
+          </div>
+          <div class="col-jp">
+            <h3 class="article-headline" style="font-size: 1.15rem;">観光地・鎌倉の暮らしとマナー対策</h3>
+            <p class="article-text" style="margin-bottom: 0;">
+              日本の夕方のニュース番組では、湘南エリアや鎌倉高校前駅周辺などの人気スポットで、観光客の増加と地元住民の静かな暮らしをどう両立させるかという取り組みが特集されています。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- フッター -->
+    <footer>
+      <span>СДЕЛАНО В КАМАКУРЕ / 鎌倉にて制作</span>
+      <span>БЕЗ ВНЕШНИХ ТРЕКЕРОВ И CDN (100% АВТОНОМНЫЙ САЙТ)</span>
+    </footer>
+  </div>
+
+</body>
+</html>
