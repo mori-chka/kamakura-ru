@@ -321,13 +321,3 @@ footer {
     color: var(--red);
     font-size: 18px;
 }
-
-@media (max-width: 600px) {
-    .about-page {
-        padding-top: 40px;
-    }
-
-    .about-language h3 {
-        font-size: 20px;
-    }
-}
